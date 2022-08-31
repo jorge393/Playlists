@@ -1,9 +1,8 @@
-const express = require('express')
-const res = require('express/lib/res')
+import express, { json } from 'express'
 
 const app = express()
 
-app.use(express.json())
+app.use(json())
 
 const port = 3000
 
