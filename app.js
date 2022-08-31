@@ -1,5 +1,5 @@
 const express = require('express')
-const res = require('express/lib/response')
+const res = require('express/lib/res')
 
 const app = express()
 
@@ -26,155 +26,156 @@ var playlists = [{  nombre : "lista_god",
                                 nombreAlbum: "a", 
                                 añoEdicion: 2021 }] 
                 }]
-    
-app.get('/playlists', (pedido, respuesta) => {
-    respuesta.send(playlists)
+
+// endpoints P1
+app.get('/playlists', (req, res) => {
+    res.send(playlists)
 })
 
-app.get('/playlists/:nombre', (pedido, respuesta) => {
-    let name = pedido.params.nombre
-    let ver = (playlists.filter(x => x.nombre == name)).at(0)
+app.get('/playlists/:nombre', (req, res) => {
+    let name = req.params.nombre
+    let ver = (playlists.find(x => x.nombre == name)).at(0)
     if(ver == "")
-    respuesta.status(404).send("not found")
+    res.status(404).send("not found")
     else
-    respuesta.send(ver.descripcion)
+    res.send(ver.descripcion)
 })
 
-app.post('/playlists', (pedido, respuesta) => {
-    ver = pedido.body.nombre
+app.post('/playlists', (req, res) => {
+    ver = req.body.nombre
     if(ver == "")
-    respuesta.status(400).send("bad request")
+    res.status(400).send("bad req")
     else
-    playlists.push(pedido.body)
-    respuesta.status(201).send(pedido.body)
+    playlists.push(req.body)
+    res.status(201).send(req.body)
 })
 
-app.put('/playlists/:nombre', (pedido, respuesta) => {
-    let name = pedido.params.nombre
+app.put('/playlists/:nombre', (req, res) => {
+    let name = req.params.nombre
     let existe = (playlists.some(x => x.nombre == name))
-    let playlist = (playlists.filter(x => x.nombre == name)).at(0) 
+    let playlist = (playlists.find(x => x.nombre == name)).at(0) 
     if(existe == "")
     {
-        respuesta.status(404).send("not found")
+        res.status(404).send("not found")
     }
-    else if (pedido.body.nombre != playlist.nombre)
+    else if (req.body.nombre != playlist.nombre)
     {
-        respuesta.status(409).send("no papu, eso no se puede hacer")
+        res.status(409).send("no papu, eso no se puede hacer")
     }
     else 
     {
-        playlist.descripcion = pedido.body.descripcion
-        respuesta.send(playlist)
+        playlist.descripcion = req.body.descripcion
+        res.send(playlist)
     }
 })
-app.delete('/playlists/:nombre', (pedido, respuesta) => {
-        let name = pedido.params.nombre
+app.delete('/playlists/:nombre', (req, res) => {
+        let name = req.params.nombre
         let existe = (playlists.some(x => x.nombre == name))
         if(existe == true)
         {
-            let listaborrar = (playlists.filter(x => x.nombre = name))
+            let listaborrar = (playlists.find(x => x.nombre = name))
             let indice = playlists.indexOf(listaborrar)
             playlists.splice(indice, 1)
-            respuesta.status(204).send()
+            res.status(204).send()
         }
         else
         {
-            respuesta.status(404).send()
+            res.status(404).send()
         }
         
     })
     
     
-    // parte dos de API
-    app.get('/playlists/:nombre/canciones', (pedido, respuesta) => {
-        let name = pedido.params.nombre
-        let song = playlists.filter(x => x.nombre = name).at(0)
-        respuesta.send(song.canciones)
+    // endpoints P2
+    app.get('/playlists/:nombre/canciones', (req, res) => {
+        let name = req.params.nombre
+        let song = playlists.find(x => x.nombre = name).at(0)
+        res.send(song.canciones)
         console.log(song.canciones)
         
     })
     
-    app.get('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-        let name = pedido.params.nombre
-        let titulo = pedido.params.titulo
-        let songa = playlists.filter(x => x.nombre == name).at(0)
+    app.get('/playlists/:nombre/canciones/:titulo', (req, res) => {
+        let name = req.params.nombre
+        let titulo = req.params.titulo
+        let songa = playlists.find(x => x.nombre == name).at(0)
         if(songa != null)
         {
-        let cancion = songa.canciones.filter(x => x.titulo == titulo).at(0)
+        let cancion = songa.canciones.find(x => x.titulo == titulo).at(0)
             if(cancion != null)
             {
-                respuesta.send(cancion)
+                res.send(cancion)
             }
             else
             {
-                respuesta.status(404).send()
+                res.status(404).send()
             }
             
         }
         else
         {
-            respuesta.status(404),send()
+            res.status(404),send()
         }
         
     })
 
-    app.post('/playlists/:nombre/canciones', (pedido, respuesta) => {
-        let name = pedido.params.nombre
+    app.post('/playlists/:nombre/canciones', (req, res) => {
+        let name = req.params.nombre
         let existe = playlists.some(x => x.nombre == name)
         if (existe != null) 
         {
-            let song = playlists.filter(x => x.nombre == name).at(0)
-            console.log(pedido.body.titulo)
-            if (pedido.body.titulo != "") 
+            let song = playlists.find(x => x.nombre == name).at(0)
+            console.log(req.body.titulo)
+            if (req.body.titulo != "") 
             {
-                song.canciones.push(pedido.body)
+                song.canciones.push(req.body)
                 playlists.push(song)
-                respuesta.status(201).send()
+                res.status(201).send()
             }
             else 
             {
-                respuesta.status(400).send()
+                res.status(400).send()
             }
         }
         else 
         {
-            respuesta.status(404).send()
+            res.status(404).send()
         }
     })
 
-    app.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-        let name = pedido.params.nombre
-        let titulo = pedido.params.titulo
-        let song = playlists.filter(x => x.nombre == name).at(0)
+    app.put('/playlists/:nombre/canciones/:titulo', (req, res) => {
+        let name = req.params.nombre
+        let titulo = req.params.titulo
+        let song = playlists.find(x => x.nombre == name).at(0)
         if(song != null)
         {
-        let cancion = song.canciones.filter(x => x.titulo == titulo).at(0)
+        let cancion = song.canciones.find(x => x.titulo == titulo).at(0)
             if(cancion != null)
             {
-                cancion.nombreArtista = pedido.body.nombreArtista
-                cancion.nombreAlbum = pedido.body.nombreAlbum
-                cancion.añoEdicion = pedido.body.añoEdicion
-                respuesta.send(cancion)
+                cancion.nombreArtista = req.body.nombreArtista
+                cancion.nombreAlbum = req.body.nombreAlbum
+                cancion.añoEdicion = req.body.añoEdicion
+                res.send(cancion)
             }
             else
             {
-                respuesta.status(404).send()
+                res.status(404).send()
             }
             
         }
         else
         {
-            respuesta.status(404),send()
+            res.status(404),send()
         }
         })
 
-        app.delete('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-            let name = pedido.params.nombre
-            let titulo = pedido.params.titulo
-            let song = playlists.filter(x => x.nombre == name).at(0)
+        app.delete('/playlists/:nombre/canciones/:titulo', (req, res) => {
+            let name = req.params.nombre
+            let titulo = req.params.titulo
+            let song = playlists.find(x => x.nombre == name).at(0)
             if(song != null)
             {
-            let cancion = song.canciones.filter(x => x.titulo == titulo).at(0)
+            let cancion = song.canciones.find(x => x.titulo == titulo).at(0)
                 if(cancion != null)
                 {
                     let indice = playlists.indexOf(song)
@@ -185,17 +186,17 @@ app.delete('/playlists/:nombre', (pedido, respuesta) => {
                         indices = i
                     })
                     playlists[indice].canciones.splice(indices,1)
-                    respuesta.send()
+                    res.send()
                 }
                 else
                 {
-                    respuesta.status(404).send()
+                    res.status(404).send()
                 }
                 
             }
             else
             {
-                respuesta.status(404),send()
+                res.status(404),send()
             }
             })
 
