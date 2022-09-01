@@ -1,10 +1,11 @@
 import express, { json } from 'express'
-
-const app = express()
+import morgan from 'morgan'
+import 'dotenv/config'
 
 app.use(json())
+app.use(morgan('dev'))
 
-const port = 3000
+const port = process.env.PORT
 
 var playlists = [{  nombre : "lista_god", 
                     descripcion: "es god",
