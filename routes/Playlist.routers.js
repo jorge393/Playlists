@@ -2,25 +2,27 @@ import express from 'express'
 
 const router = express.Router()
 
-var playlists = [{  nombre : "lista_god", 
-                    descripcion: "es god",
-                    canciones:[ {titulo : "something", 
-                                nombreArtista:"The Beatles", 
-                                nombreAlbum: "Abbey Road", 
-                                añoEdicion: 1969 },
-                                {   titulo: "Cancion para mi muerte",
-                                    nombreArtista: "Sui Generis",
-                                    nombreAlbum: "Vida",
-                                    añoEdicion: 1972}] 
-                },
-                {  
-                    nombre : "ads", 
-                    descripcion: "as",
-                    canciones:[{titulo : "a", 
-                                nombreArtista:"a", 
-                                nombreAlbum: "a", 
-                                añoEdicion: 2021 }] 
-                }]
+import Cancion from '../models/playlist.models'
+
+// var playlists = [{  nombre : "lista_god", 
+//                     descripcion: "es god",
+//                     canciones:[ {titulo : "something", 
+//                                 nombreArtista:"The Beatles", 
+//                                 nombreAlbum: "Abbey Road", 
+//                                 añoEdicion: 1969 },
+//                                 {   titulo: "Cancion para mi muerte",
+//                                     nombreArtista: "Sui Generis",
+//                                     nombreAlbum: "Vida",
+//                                     añoEdicion: 1972}] 
+//                 },
+//                 {  
+//                     nombre : "ads", 
+//                     descripcion: "as",
+//                     canciones:[{titulo : "a", 
+//                                 nombreArtista:"a", 
+//                                 nombreAlbum: "a", 
+//                                 añoEdicion: 2021 }] 
+//                 }]
 
 // endpoints P1
 router.get('/playlists', (req, res) => {

@@ -14,7 +14,7 @@ app.use(morgan('dev'))
 
 app.use(PlaylistRouters)
 
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 
 app.listen(port, () => {
     console.log(`Escuchando pedidos en PORT: ${port}`)
