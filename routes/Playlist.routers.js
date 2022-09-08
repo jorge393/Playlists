@@ -1,8 +1,11 @@
-import express from 'express'
+import {Router} from 'express'
 
-const router = express.Router()
+const router = Router()
 
-import playlists from '../models/playlist.models'
+import {LeerPLaylists, LeerPorNombre, CrearPlaylists, 
+        ActualizarPlaylists, BorrarPlaylists, LeerCanciones,
+        LeerPorTitulo, CrearCancion, ActualizarCancion, 
+        BorrarCancion} from '../controllers/playlists.controllers.js'
 
 // var playlists = [{  "nombre" : "lista_god", 
 //                     "descripcion": "es god",
@@ -26,156 +29,26 @@ import playlists from '../models/playlist.models'
 
 // endpoints P1
 
-router.get('/playlists',async (req, res) => {
-    try{
-        let playlist = await playlists.find()
-        res.send(playlist)
-        }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.get('/playlists', LeerPLaylists)
 
-router.get('/playlists/:nombre',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let playlist = await playlists.findOne({nombre: name})
-        res.send(playlist)
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.get('/playlists/:nombre', LeerPorNombre)
 
-router.post('/playlists',async (req, res) => {
-    try
-    {
-        let playlist = req.body
-        await playlists.create(playlist)
-        res.status(201).send(playlist)
+router.post('/playlists', CrearPlaylists)
 
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.put('/playlists/:nombre', ActualizarPlaylists)
 
-router.put('/playlists/:nombre',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let playlist = req.body
-        await playlists.findByIdAndUpdate({nombre : name}, playlist)
-        let cancion = await playlists.findOne({nombre : name})
-        res.send(cancion)
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
-
-router.delete('/playlists/:nombre',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        await playlists.findOneAndDelete({nombre : name})
-        res.status(204).send()
-
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.delete('/playlists/:nombre',BorrarPlaylists)
     
     
     // endpoints P2
-    router.get('/playlists/:nombre/canciones',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let playlist = playlists.findOne({nombre : name})
-        res.send(playlist.canciones)
-    }   
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-        
-})
-    
-    router.get('/playlists/:nombre/canciones/:titulo',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let tituloc = req.params.titulo
-        let playlist = await playlists.findOne({nombre : name})
-        let cancion = playlist.canciones.find(x => x.titulo == tituloc)
-        res.send(cancion)
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.get('/playlists/:nombre/canciones', LeerCanciones)
 
-    router.post('/playlists/:nombre/canciones',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let cancion = req.body
-        let playlist = await playlists.findOne({nombre : name})
-        playlist.canciones.push(cancion)
-        await playlists.findByIdAndUpdate({nombre : name}, cancion)
-        res.status(201).send()
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.get('/playlists/:nombre/canciones/:titulo', LeerPorTitulo)
 
-    router.put('/playlists/:nombre/canciones/:titulo',async (req, res) => {
-    try
-    {
-        let name = req.params.nombre
-        let tituloc = req.params.titulo
-        let cancionn = req.body
-        let playlist = await playlists.findOne({nombre : name})
-        let cambiar = playlist.canciones.find(x => x.titulo == tituloc)
-        cambiar.NomArtista = cancionn.NomArtista
-        cambiar.NomAlbum = cancionn.NomAlbum
-        cambiar.Lanzamiento = cancionn.Lanzamiento
-        await playlists.findByIdAndUpdate({nombre : name}, playlist)
-        res.status(201).send() 
-    }
-    catch(error)
-    {
-        res.status(500).send(error)
-    }
-})
+router.post('/playlists/:nombre/canciones', CrearCancion)
 
-    router.delete('/playlists/:nombre/canciones/:titulo',async (req, res) => {
-        try
-        {
-            let name = req.params.nombre
-            let tituloc = req.params.titulo
-            let playlist = await playlists.findOne({nombre : name})
-            let cancion  = playlist.canciones.find(x => x.titulo == tituloc)
-            let posicion = playlist.canciones.indexOf(cancion)
-            playlist.canciones.splice(posicion, 1)
-            await playlists.findByIdAndDelete({nombre : name }, playlist)
-            res.status(204).send()
-        }
-        catch(error)
-        {
-            res.status(500).send(error)
-        }
-})
+router.put('/playlists/:nombre/canciones/:titulo', ActualizarCancion)
+
+router.delete('/playlists/:nombre/canciones/:titulo', BorrarCancion)
 
 export default router
